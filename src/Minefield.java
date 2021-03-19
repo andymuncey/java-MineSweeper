@@ -41,7 +41,7 @@ public class Minefield {
         }
     }
 
-    private ArrayList<Point> validNeighboursForPoint(Point point) {
+    public ArrayList<Point> validNeighboursForPoint(Point point) {
         ArrayList<Point> neighbours = new ArrayList<Point>();
         final int minX = Math.max(0, point.getX() - 1);
         final int maxX = Math.min(width - 1, point.getX() + 1);
