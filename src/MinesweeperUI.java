@@ -182,4 +182,49 @@ public class MinesweeperUI
         }
     }
 
+    private class RightClickFlagListener implements MouseListener
+    {
+        @Override
+        public void mouseClicked(MouseEvent e)
+        {
+
+        }
+
+        @Override
+        public void mousePressed(MouseEvent e)
+        {
+
+        }
+
+        @Override
+        public void mouseReleased(MouseEvent e)
+        {
+            if (e.getButton() != MouseEvent.BUTTON1){
+                if (e.getSource() instanceof JButton) {
+                    JButton button = ((JButton)e.getSource());
+                    if (button.getText().equals(" ")){
+                        button.setText("+");
+                        minesFlagged++;
+                    } else if (button.getText().equals("+")) {
+                        button.setText(" ");
+                        minesFlagged--;
+                    }
+                }
+            }
+        }
+
+        @Override
+        public void mouseEntered(MouseEvent e)
+        {
+
+        }
+
+        @Override
+        public void mouseExited(MouseEvent e)
+        {
+
+        }
+    }
+
+
 }
