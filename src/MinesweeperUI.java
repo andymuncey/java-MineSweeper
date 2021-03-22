@@ -13,6 +13,7 @@ public class MinesweeperUI
     private JButton resetButton;
     private JPanel rootPanel;
     private JPanel minePanel;
+    private JLabel minesRemainingLabel;
 
     private final int width = 7;
     private final int height = 5;
@@ -22,7 +23,6 @@ public class MinesweeperUI
     private Minefield mineField = new Minefield(width, height);
 
     private ActionListener mineButtonListener;
-    private MouseListener rightClickListener;
 
     public MinesweeperUI()
     {
@@ -34,7 +34,7 @@ public class MinesweeperUI
                 resetButtons();
             }
         });
-
+    updateRemainingCount();
     }
 
     public static void main(String[] args)
@@ -53,7 +53,7 @@ public class MinesweeperUI
         minePanel = new JPanel();
         minePanel.setLayout(mineLayout);
         setupMineButtonListener();
-        rightClickListener = new RightClickFlagListener();
+        MouseListener rightClickListener = new RightClickFlagListener();
 
 
         for (int i = 0; i < (width * height); i++)
@@ -64,6 +64,7 @@ public class MinesweeperUI
             mineButton.setActionCommand(String.valueOf(i));
             minePanel.add(mineButton);
         }
+
     }
 
     private JButton findButtonWithActionCommand(int mineId)
@@ -114,6 +115,7 @@ public class MinesweeperUI
                         exposeAdjacentMineCounts(point);
                     }
                 }
+                updateRemainingCount();
             }
         };
     }
@@ -169,8 +171,14 @@ public class MinesweeperUI
         }
     }
 
+    private void updateRemainingCount(){
+        int remaining = mineField.getMineCount() - minesFlagged;
+        minesRemainingLabel.setText("Mines Remaining: " + remaining);
+    }
+
     private void resetButtons()
     {
+        minesFlagged = 0;
         mineField = new Minefield(width, height);
         for (Component possibleButton : minePanel.getComponents())
         {
@@ -180,6 +188,7 @@ public class MinesweeperUI
                 actualButton.setText(" ");
             }
         }
+        updateRemainingCount();
     }
 
     private class RightClickFlagListener implements MouseListener
@@ -210,7 +219,9 @@ public class MinesweeperUI
                         minesFlagged--;
                     }
                 }
+                updateRemainingCount();
             }
+
         }
 
         @Override
