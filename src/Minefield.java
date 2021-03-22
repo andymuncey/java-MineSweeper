@@ -1,9 +1,18 @@
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Random;
+import java.util.Set;
 
 public class Minefield {
     private boolean started = false;
-    private boolean exploded = false;
+
+    //used to display remaining mines
+    public int getMineCount()
+    {
+        return mineCount;
+    }
+
+    //    private boolean exploded = false;
     private int mineCount;
     private int width, height;
     private MineInfo[][] field;
@@ -41,8 +50,8 @@ public class Minefield {
         }
     }
 
-    public ArrayList<Point> validNeighboursForPoint(Point point) {
-        ArrayList<Point> neighbours = new ArrayList<Point>();
+    public Set<Point> validNeighboursForPoint(Point point) {
+        Set<Point> neighbours = new HashSet<>();
         final int minX = Math.max(0, point.getX() - 1);
         final int maxX = Math.min(width - 1, point.getX() + 1);
         final int minY = Math.max(0, point.getY() - 1);
@@ -55,7 +64,7 @@ public class Minefield {
         return neighbours;
     }
 
-    private int countMinesAtPoints(ArrayList<Point> points) {
+    private int countMinesAtPoints(Set<Point> points) {
         int count = 0;
         for (Point point : points) {
             if (field[point.getY()][point.getX()].isMine()) {
@@ -68,7 +77,7 @@ public class Minefield {
     private void populateAdjacentMineCount() {
         for (int y = 0; y < field.length; y++) {
             for (int x = 0; x < field[y].length; x++) {
-                final ArrayList<Point> neighbours = validNeighboursForPoint(new Point(x, y));
+                final Set<Point> neighbours = validNeighboursForPoint(new Point(x, y));
                 field[y][x].setAdjacentMineCount(countMinesAtPoints(neighbours));
             }
         }
@@ -81,9 +90,9 @@ public class Minefield {
             populateAdjacentMineCount();
         }
         MineInfo location = field[point.getY()][point.getX()];
-        if (location.isMine()) {
-            exploded = true;
-        }
+//        if (location.isMine()) {
+//            exploded = true;
+//        }
         MineInfo mineInfo = new MineInfo();
         mineInfo.setAdjacentMineCount(location.getAdjacentMineCount());
         mineInfo.setMine(location.isMine());

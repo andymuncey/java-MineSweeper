@@ -2,7 +2,11 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 
 public class MinesweeperUI
 {
@@ -13,7 +17,12 @@ public class MinesweeperUI
     private final int width = 7;
     private final int height = 5;
 
+    private int minesFlagged = 0;
+
     private Minefield mineField = new Minefield(width, height);
+
+    private ActionListener mineButtonListener;
+    private MouseListener rightClickListener;
 
     public MinesweeperUI()
     {
@@ -25,6 +34,7 @@ public class MinesweeperUI
                 resetButtons();
             }
         });
+
     }
 
     public static void main(String[] args)
@@ -36,7 +46,6 @@ public class MinesweeperUI
         frame.setVisible(true);
     }
 
-    private ActionListener mineButtonListener;
 
     private void createUIComponents()
     {
@@ -44,11 +53,14 @@ public class MinesweeperUI
         minePanel = new JPanel();
         minePanel.setLayout(mineLayout);
         setupMineButtonListener();
+        rightClickListener = new RightClickFlagListener();
+
 
         for (int i = 0; i < (width * height); i++)
         {
             JButton mineButton = new JButton(" ");
             mineButton.addActionListener(mineButtonListener);
+            mineButton.addMouseListener(rightClickListener);
             mineButton.setActionCommand(String.valueOf(i));
             minePanel.add(mineButton);
         }
@@ -56,7 +68,6 @@ public class MinesweeperUI
 
     private JButton findButtonWithActionCommand(int mineId)
     {
-
         for (Component component : minePanel.getComponents())
         {
             if (component instanceof JButton)
@@ -74,12 +85,12 @@ public class MinesweeperUI
 
     private Point pointForId(int mineId)
     {
-        int x = mineId % width;
-        int y = mineId / width;
+        final int x = mineId % width;
+        final int y = mineId / width;
         return new Point(x, y);
     }
 
-    void setupMineButtonListener()
+    private void setupMineButtonListener()
     {
         mineButtonListener = new ActionListener()
         {
@@ -94,7 +105,6 @@ public class MinesweeperUI
                 if (info.isMine())
                 {
                     explodeAllMines();
-                    button.setText("*");
                 } else
                 {
                     button.setText(String.valueOf(info.getAdjacentMineCount()));
@@ -110,8 +120,8 @@ public class MinesweeperUI
 
     private void exposeAdjacentMineCounts(Point point)
     {
-        ArrayList<Point> neighbours = mineField.validNeighboursForPoint(point);
-        ArrayList<Point> pointsWith0 = new ArrayList<Point>();
+        Set<Point> neighbours = mineField.validNeighboursForPoint(point);
+        Set<Point> pointsWith0 = new HashSet<>();
         for (Point neighbour : neighbours)
         {
             int count = exposeAndReturnMineCount(neighbour);
@@ -141,7 +151,7 @@ public class MinesweeperUI
         return mineCount;
     }
 
-    void explodeAllMines()
+    private void explodeAllMines()
     {
         for (Component component : minePanel.getComponents())
         {
@@ -159,7 +169,7 @@ public class MinesweeperUI
         }
     }
 
-    void resetButtons()
+    private void resetButtons()
     {
         mineField = new Minefield(width, height);
         for (Component possibleButton : minePanel.getComponents())
